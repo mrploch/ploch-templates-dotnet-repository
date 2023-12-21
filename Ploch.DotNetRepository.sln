@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repository", "repository", "{752DAE4A-C008-48E6-B6CF-41F103BD0C54}"
+	ProjectSection(SolutionItems) = preProject
+		.codacy.yml = .codacy.yml
+		.dockerignore = .dockerignore
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{3EA94840-3A10-4BBB-A7B8-A9B08A020DF9}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\build-test-sonar.ps1 = scripts\build-test-sonar.ps1
+		scripts\Clean-DocFx.ps1 = scripts\Clean-DocFx.ps1
+		scripts\Clean-Repository.ps1 = scripts\Clean-Repository.ps1
+		scripts\publish-nugetorg.ps1 = scripts\publish-nugetorg.ps1
+		scripts\run-sonar-build-test.ps1 = scripts\run-sonar-build-test.ps1
+		scripts\build-test.ps1 = scripts\build-test.ps1
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "src\ConsoleApp\ConsoleApp.csproj", "{A6309992-19DE-48A6-8B97-B15D4501BAD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp.Tests", "tests\ConsoleApp.Tests\ConsoleApp.Tests.csproj", "{EF5B706A-4572-4645-9C34-B99897A215FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A6309992-19DE-48A6-8B97-B15D4501BAD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6309992-19DE-48A6-8B97-B15D4501BAD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6309992-19DE-48A6-8B97-B15D4501BAD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6309992-19DE-48A6-8B97-B15D4501BAD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF5B706A-4572-4645-9C34-B99897A215FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF5B706A-4572-4645-9C34-B99897A215FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF5B706A-4572-4645-9C34-B99897A215FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF5B706A-4572-4645-9C34-B99897A215FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
