@@ -5,7 +5,8 @@ namespace ConsoleApp.Tests;
 
 public class DoSomethingTests
 {
-    [Theory, AutoMockData]
+    [Theory]
+    [AutoMockData]
     public void ReturnHelloWorld_Should_ReturnHelloWorldString(string name)
     {
         var actualResult = DoSomething.ReturnHelloWorld(name);
