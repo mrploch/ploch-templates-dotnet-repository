@@ -3,3 +3,4 @@ engines:
   sonarscharp:
     exclude_paths:
       - "src/**Tests/**"
+      - ".github/**"
