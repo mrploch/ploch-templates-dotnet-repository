@@ -32,7 +32,8 @@ function Build-Solution([Parameter(Mandatory = $true)][string] $solutionFile,
                         [Parameter(Mandatory = $false)][string] $sonarCloudProjectKey,
                         [Parameter(Mandatory = $false)][string] $sonarCloudOrganization,
                         [Parameter(Mandatory = $false)][string] $sonarToken)
-{    $InformationPreference = 'Continue'
+{
+    $InformationPreference = 'Continue'
 
     Write-Information 'Build-Solution:'
     Write-Information "`$solutionFile = '$solutionFile'"
@@ -43,7 +44,7 @@ function Build-Solution([Parameter(Mandatory = $true)][string] $solutionFile,
     Write-Information "sonarToken = $sonarToken"
     $solutionFileItem = Get-Item $solutionFile
     $solutionDirectory = $solutionFileItem.DirectoryName
-    
+
     Write-Information "solutionDirectory: $solutionDirectory"
     $currentDir = $PSScriptRoot
     set-location $solutionFileItem.DirectoryName
@@ -64,18 +65,18 @@ function Build-Solution([Parameter(Mandatory = $true)][string] $solutionFile,
     if ($sonarCloudAnalysis)
     {
         Write-Information 'dotnet sonarscanner begin /k:"$sonarCloudProjectKey" /o:"$sonarCloudOrganization" /d:sonar.login = "$sonarToken" /d:sonar.cs.opencover.reportsPaths = **/CoverageResults/coverage.opencover.xml /d:sonar.host.url = "https://sonarcloud.io"'
-        dotnet sonarscanner begin /k:"$sonarCloudProjectKey" /o:"$sonarCloudOrganization" /d:sonar.login="$sonarToken" /d:sonar.cs.opencover.reportsPaths=**/CoverageResults/coverage.opencover.xml /d:sonar.host.url="https://sonarcloud.io"
+        dotnet sonarscanner begin /k:"$sonarCloudProjectKey" /o:"$sonarCloudOrganization" /d:sonar.login = "$sonarToken" /d:sonar.cs.opencover.reportsPaths = **/CoverageResults/coverage.opencover.xml /d:sonar.host.url = "https://sonarcloud.io"
     }
     dotnet build $solutionFileItem.FullName --no-incremental --no-restore
     if ($collectCoverage)
     {
-        dotnet test $solutionFileItem.FullName --verbosity normal --no-build --logger "trx;LogFileName=TestOutputResults.xml" /p:CollectCoverage=true /p:CoverletOutput=./CoverageResults/ "/p:CoverletOutputFormat=cobertura%2copencover"
+        dotnet test $solutionFileItem.FullName --verbosity normal --no-build --logger "trx;LogFileName=TestOutputResults.xml" /p:CollectCoverage = true /p:CoverletOutput = ./CoverageResults/ "/p:CoverletOutputFormat=cobertura%2copencover"
     }
     if ($sonarCloudAnalysis)
     {
-        dotnet sonarscanner end /d:sonar.login="$sonarToken"
+        dotnet sonarscanner end /d:sonar.login = "$sonarToken"
     }
-    
+
     cd $currentDir
 }
 
@@ -102,7 +103,7 @@ function Clear-Solution([Parameter(Mandatory = $true)] [string] $solutionDirecto
     {
         $solutionDirectory = [System.IO.Path]::GetDirectoryName($solutionDirectory)
     }
-    Remove-Folders -path $solutionDirectory -folderNames obj,bin,CoverageResults,TestResults -excludeWildcards $excludeWildcards
+    Remove-Folders -path $solutionDirectory -folderNames obj, bin, CoverageResults, TestResults -excludeWildcards $excludeWildcards
 }
 
 # Helper functions
@@ -122,21 +123,21 @@ function Remove-Folders([Parameter(Mandatory = $true)] [string] $path, [Paramete
     $items = get-childitem -Path $path -Recurse -force -Directory -Include $folderNames
     foreach ($item in $items)
     {
-        Write-Debug "Checking item: $($item.FullName)"
-        
+        Write-Debug "Checking item: $( $item.FullName )"
+
         $remove = $true
         foreach ($excludeWildcard in $excludeWildcards)
         {
             if ($item.FullName -like $excludeWildcard)
             {
-                Write-Debug "Item $($item.FullName) matches excludeWildcard $excludeWildcard"
+                Write-Debug "Item $( $item.FullName ) matches excludeWildcard $excludeWildcard"
                 $remove = $false
                 break
             }
         }
         if ($remove)
         {
-            Write-Debug "Deleting $($item.FullName)"
+            Write-Debug "Deleting $( $item.FullName )"
             Remove-Item -Path $item.FullName -Recurse -Force
         }
     }
