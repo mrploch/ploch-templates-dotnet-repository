@@ -32,11 +32,8 @@ function Build-Solution([Parameter(Mandatory = $true)][string] $solutionFile,
                         [Parameter(Mandatory = $false)][string] $sonarCloudProjectKey,
                         [Parameter(Mandatory = $false)][string] $sonarCloudOrganization,
                         [Parameter(Mandatory = $false)][string] $sonarToken)
-{
-    $InformationPreference = 'Continue'
-    $WarningPreference = 'Continue'
-    $DebugPreference = 'Continue'
-    $VerbosePreference = 'Continue'
+{    $InformationPreference = 'Continue'
+
     Write-Information 'Build-Solution:'
     Write-Information "`$solutionFile = '$solutionFile'"
     Write-Information "`$collectCoverage = $collectCoverage"
@@ -72,7 +69,7 @@ function Build-Solution([Parameter(Mandatory = $true)][string] $solutionFile,
     dotnet build $solutionFileItem.FullName --no-incremental --no-restore
     if ($collectCoverage)
     {
-        dotnet test $solutionFileItem.FullName --verbosity normal --no-build --logger "trx;LogFileName=TestOutputResults.xml" /p:CollectCoverage = true /p:CoverletOutput = ./CoverageResults/ "/p:CoverletOutputFormat=cobertura%2copencover"
+        dotnet test $solutionFileItem.FullName --verbosity normal --no-build --logger "trx;LogFileName=TestOutputResults.xml" /p:CollectCoverage=true /p:CoverletOutput=./CoverageResults/ "/p:CoverletOutputFormat=cobertura%2copencover"
     }
     if ($sonarCloudAnalysis)
     {
@@ -105,7 +102,7 @@ function Clear-Solution([Parameter(Mandatory = $true)] [string] $solutionDirecto
     {
         $solutionDirectory = [System.IO.Path]::GetDirectoryName($solutionDirectory)
     }
-    Remove-Folders -path $solutionDirectory -folderNames obj, bin, CoverageResults -excludeWildcards $excludeWildcards
+    Remove-Folders -path $solutionDirectory -folderNames obj,bin,CoverageResults,TestResults -excludeWildcards $excludeWildcards
 }
 
 # Helper functions
@@ -121,21 +118,25 @@ function Get-FolderName([Parameter(Mandatory = $true)] [string] $path)
 
 function Remove-Folders([Parameter(Mandatory = $true)] [string] $path, [Parameter(Mandatory = $true)] [string[]] $folderNames, [string[]] $excludeWildcards = @())
 {
+    Write-Information "Remove-Folders: path: $path, folderNames: $folderNames, excludeWildcards: $excludeWildcards"
     $items = get-childitem -Path $path -Recurse -force -Directory -Include $folderNames
     foreach ($item in $items)
     {
+        Write-Debug "Checking item: $($item.FullName)"
+        
         $remove = $true
         foreach ($excludeWildcard in $excludeWildcards)
         {
             if ($item.FullName -like $excludeWildcard)
             {
+                Write-Debug "Item $($item.FullName) matches excludeWildcard $excludeWildcard"
                 $remove = $false
                 break
             }
         }
         if ($remove)
         {
-            Write-Output $item.FullName
+            Write-Debug "Deleting $($item.FullName)"
             Remove-Item -Path $item.FullName -Recurse -Force
         }
     }
