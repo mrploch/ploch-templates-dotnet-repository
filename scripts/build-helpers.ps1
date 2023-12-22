@@ -33,31 +33,53 @@ function Build-Solution([Parameter(Mandatory = $true)][string] $solutionFile,
                         [Parameter(Mandatory = $false)][string] $sonarCloudOrganization,
                         [Parameter(Mandatory = $false)][string] $sonarToken)
 {
-
+    $InformationPreference = 'Continue'
+    $WarningPreference = 'Continue'
+    $DebugPreference = 'Continue'
+    $VerbosePreference = 'Continue'
+    Write-Information 'Build-Solution:'
+    Write-Information "`$solutionFile = '$solutionFile'"
+    Write-Information "`$collectCoverage = $collectCoverage"
+    Write-Information "`$sonarCloudAnalysis = $sonarCloudAnalysis"
+    Write-Information "`$sonarCloudProjectKey = '$sonarCloudProjectKey'"
+    Write-Information "`$sonarCloudOrganization = '$sonarCloudOrganization'"
+    Write-Information "sonarToken = $sonarToken"
+    $solutionFileItem = Get-Item $solutionFile
+    $solutionDirectory = $solutionFileItem.DirectoryName
+    
+    Write-Information "solutionDirectory: $solutionDirectory"
+    $currentDir = $PSScriptRoot
+    set-location $solutionFileItem.DirectoryName
     if ($sonarCloudAnalysis)
     {
         if ((-not$sonarCloudProjectKey) -or (-not$sonarCloudOrganization) -or (-not$sonarToken))
         {
-            throw "sonarCloudProjectKey is required when sonarCloudAnalysis is true"
+            throw 'sonarCloudProjectKey is required when sonarCloudAnalysis is true'
         }
-        dotnet tool --global dotnet-sonarscanner
+        Write-Information 'Running with the SonarQube analysis'
+        Write-Information "sonarCloudProjectKey: $sonarCloudProjectKey, sonarCloudOrganization: $sonarCloudOrganization, sonarToken: $sonarToken"
+        Write-Information 'Installing dotnet-sonarscanner tool'
+        dotnet tool install --global dotnet-sonarscanner
     }
 
-    dotnet restore $solutionFile
+    dotnet restore $solutionFileItem.FullName
 
     if ($sonarCloudAnalysis)
     {
-        dotnet sonarscanner begin /k:"$sonarCloudProjectKey" /o:"$sonarCloudOrganization" /d:sonar.login = "$sonarToken" /d:sonar.cs.opencover.reportsPaths = **/CoverageResults/coverage.opencover.xml /d:sonar.host.url = "https://sonarcloud.io"
+        Write-Information 'dotnet sonarscanner begin /k:"$sonarCloudProjectKey" /o:"$sonarCloudOrganization" /d:sonar.login = "$sonarToken" /d:sonar.cs.opencover.reportsPaths = **/CoverageResults/coverage.opencover.xml /d:sonar.host.url = "https://sonarcloud.io"'
+        dotnet sonarscanner begin /k:"$sonarCloudProjectKey" /o:"$sonarCloudOrganization" /d:sonar.login="$sonarToken" /d:sonar.cs.opencover.reportsPaths=**/CoverageResults/coverage.opencover.xml /d:sonar.host.url="https://sonarcloud.io"
     }
-    dotnet build $solutionFile --no-incremental --no-restore
+    dotnet build $solutionFileItem.FullName --no-incremental --no-restore
     if ($collectCoverage)
     {
-        dotnet test $solutionFile --verbosity normal --no-build --logger "trx;LogFileName=TestOutputResults.xml" /p:CollectCoverage = true /p:CoverletOutput = ./CoverageResults/ "/p:CoverletOutputFormat=cobertura%2copencover"
+        dotnet test $solutionFileItem.FullName --verbosity normal --no-build --logger "trx;LogFileName=TestOutputResults.xml" /p:CollectCoverage = true /p:CoverletOutput = ./CoverageResults/ "/p:CoverletOutputFormat=cobertura%2copencover"
     }
     if ($sonarCloudAnalysis)
     {
-        dotnet sonarscanner end /d:sonar.login = "$sonarToken"
+        dotnet sonarscanner end /d:sonar.login="$sonarToken"
     }
+    
+    cd $currentDir
 }
 
 <#
