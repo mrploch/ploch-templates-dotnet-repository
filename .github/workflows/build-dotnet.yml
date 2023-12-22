@@ -4,12 +4,12 @@
 name: Build
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
 env: 
-  SONAR_PROJECT_KEY: mrploch_ploch-common
+  SONAR_PROJECT_KEY: mrploch_ploch-templates-dotnet-repository
   SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
 jobs:
   build:
@@ -18,9 +18,7 @@ jobs:
 
     steps:
       - run: echo "The branch name is ${{ github.repository }}"
-      - uses: actions/checkout@v3
-      - name: Copy documentation files
-        run: cp ./README.md ./DocumentationSite/index.md
+      - uses: actions/checkout@v3      
       - name: Build, test and scan
         uses: mrploch/ploch-github-actions/build-test-sonar@main            
         with:
@@ -28,13 +26,6 @@ jobs:
           sonar-project-key: ${{ env.SONAR_PROJECT_KEY }}
           sonar-organization: ${{ env.SONAR_ORGANIZATION }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
-      # - name: Publish Test Results
-      #   uses: EnricoMi/publish-unit-test-result-action@v2
-      #   if: always()
-      #   with:
-      #     files: |
-      #       **/TestResults/*.xml
-      #       **/TestResults/*.trx
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
@@ -59,16 +50,9 @@ jobs:
           name: code-coverage
           path: |
             **/CoverageResults/*.xml        
-
-      - name: Deploy GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.ref == 'refs/heads/master' }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./DocumentationSite/_site
       # Publish all NuGet packages to NuGet.org
       # Use --skip-duplicate to prevent errors if a package with the same version already exists.
-      # If you retry a failed workflow, already published packages will be skipped without error.
+      # If you retry a failed workflow, already published packages will be skipped without an error.
       - name: Add GitHub Packages source
         run: dotnet nuget add source --username kploch --password ${{secrets.GH_PACKAGES_TOKEN}} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/mrploch/index.json"
       - name: Publish NuGet package
