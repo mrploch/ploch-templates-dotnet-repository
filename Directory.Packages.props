@@ -3,6 +3,7 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
+        <PackageVersion Include="coverlet.msbuild" Version="6.0.0" />
         <PackageVersion Include="FluentAssertions" Version="6.12.0" />
         <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
