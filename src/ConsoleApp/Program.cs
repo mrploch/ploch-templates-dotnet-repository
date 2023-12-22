@@ -2,4 +2,4 @@
 
 using ConsoleApp;
 
-Console.WriteLine(DoSomething.ReturnHelloWorld());
+Console.WriteLine(DoSomething.ReturnHelloWorld("Mr Ploch"));

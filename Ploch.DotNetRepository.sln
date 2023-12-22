@@ -9,16 +9,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "repository", "repository", 
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		README.md = README.md
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{3EA94840-3A10-4BBB-A7B8-A9B08A020DF9}"
 	ProjectSection(SolutionItems) = preProject
-		scripts\build-test-sonar.ps1 = scripts\build-test-sonar.ps1
 		scripts\Clean-DocFx.ps1 = scripts\Clean-DocFx.ps1
-		scripts\Clean-Repository.ps1 = scripts\Clean-Repository.ps1
 		scripts\publish-nugetorg.ps1 = scripts\publish-nugetorg.ps1
 		scripts\run-sonar-build-test.ps1 = scripts\run-sonar-build-test.ps1
 		scripts\build-test.ps1 = scripts\build-test.ps1
+		scripts\build-helpers.ps1 = scripts\build-helpers.ps1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "src\ConsoleApp\ConsoleApp.csproj", "{A6309992-19DE-48A6-8B97-B15D4501BAD6}"

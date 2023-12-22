@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
-    <PropertyGroup>
+    <PropertyGroup Label="Product">
         <Authors>Kris Ploch</Authors>
         <Company>Ploch</Company>
         <Product>Ploch.DotNetRepository</Product>
@@ -10,10 +10,15 @@
         <Copyright>Kris Ploch $([System.DateTime]::Now.Year)</Copyright>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    </PropertyGroup>
+    <PropertyGroup Label="Build">
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <AnalysisLevel>latest-Recommended</AnalysisLevel>
         <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <IsTestProject>$(MSBuildProjectName.EndsWith('Tests'))</IsTestProject>
+    </PropertyGroup>
+    <PropertyGroup Label="Versioning">
         <VersionPrefix>1.0.0</VersionPrefix>
         <VersionSuffix>-prerelease</VersionSuffix>
         <BuildNumber>$([System.DateTime]::UtcNow.ToString("yyMMddHHmmss"))</BuildNumber>
@@ -21,9 +26,7 @@
         <Version>$(VersionPrefix)$(FullVersionSuffix)</Version>
         <FileVersion>$(InformationalVersion)</FileVersion>
         <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
-        <IsTestProject>$(MSBuildProjectName.EndsWith('Tests'))</IsTestProject>
     </PropertyGroup>
-
     <PropertyGroup Label="ProjectType">
         <IsReleaseBuild>false</IsReleaseBuild>
         <IsReleaseBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</IsReleaseBuild>

@@ -1,17 +1,15 @@
-using Xunit;
 using FluentAssertions;
-using ConsoleApp;
+using Objectivity.AutoFixture.XUnit2.AutoMoq.Attributes;
 
-namespace ConsoleApp.Tests
+namespace ConsoleApp.Tests;
+
+public class DoSomethingTests
 {
-    public class DoSomethingTests
+    [Theory, AutoMockData]
+    public void ReturnHelloWorld_Should_ReturnHelloWorldString(string name)
     {
-        [Fact]
-        public void ReturnHelloWorld_Should_ReturnHelloWorldString()
-        {
-           string actualResult = DoSomething.ReturnHelloWorld();
-           
-           actualResult.Should().Be("Hello World!");
-        }
+        var actualResult = DoSomething.ReturnHelloWorld(name);
+
+        actualResult.Should().Be($"Hello {name}! Hello World!");
     }
 }
