@@ -21,7 +21,7 @@
     <PropertyGroup Label="Versioning">
         <VersionPrefix>1.0.0</VersionPrefix>
         <VersionSuffix>-prerelease</VersionSuffix>
-        <BuildNumber>$([System.DateTime]::UtcNow.ToString("yyMMddHHmmss"))</BuildNumber>
+        <BuildNumber>$([System.DateTime]::UtcNow.ToString("yyMMddHH"))</BuildNumber>
         <FullVersionSuffix>$(VersionSuffix)-$(BuildNumber)</FullVersionSuffix>
         <Version>$(VersionPrefix)$(FullVersionSuffix)</Version>
         <FileVersion>$(InformationalVersion)</FileVersion>
