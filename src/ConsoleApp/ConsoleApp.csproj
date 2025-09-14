@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" />
+    <PackageVersion Update="Microsoft.CodeAnalysis.NetAnalyzers" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageVersion Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15" />
+    <PackageVersion Update="Microsoft.VisualStudio.Threading.Analyzers" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageVersion Update="SonarAnalyzer.CSharp" Version="10.15.0.120848" />
+    <PackageVersion Update="SonarAnalyzer.CSharp" />
   </ItemGroup>
 
   <ItemGroup>
