@@ -8,6 +8,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="README.md" />
+    <File Path="Ploch.DotNetRepository.nuspec" />
   </Folder>
   <Folder Name="/scripts/">
     <File Path="scripts/build-helpers.ps1" />
@@ -16,6 +17,9 @@
     <File Path="scripts/publish-nugetorg.ps1" />
     <File Path="scripts/run-sonar-build-test.ps1" />
   </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/.editorconfig" />
+    <Project Path="tests/ConsoleApp.Tests/ConsoleApp.Tests.csproj" />
+  </Folder>
   <Project Path="src/ConsoleApp/ConsoleApp.csproj" />
-  <Project Path="tests/ConsoleApp.Tests/ConsoleApp.Tests.csproj" />
 </Solution>
