@@ -390,4 +390,5 @@ codestream.xml
 /.idea/**/.idea/dataSources.xml
 /.idea/**/.idea/inspectionProfiles/Project_Default.xml
 /.idea/.idea.Ploch.DotNetRepository.Data/.idea/vcs.xml
+/.idea/**/*copilot*
 **/.idea/codestream.xml
