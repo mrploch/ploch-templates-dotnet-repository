@@ -31,38 +31,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ConsoleApp\ConsoleApp.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageVersion Update="Microsoft.CodeAnalysis.NetAnalyzers" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageVersion Update="Microsoft.VisualStudio.Threading.Analyzers" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageVersion Update="SonarAnalyzer.CSharp" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="SonarAnalyzer.CSharp">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
 </Project>
