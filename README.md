@@ -93,3 +93,4 @@ The `VersionPrefix` property is the first part of the version.
 
 The [`Directory.Packages.props`](./Directory.Packages.props) file located in the [solution root folder](.) contains
 versions of packages used in the repository and default packages used in all projects.
+test
