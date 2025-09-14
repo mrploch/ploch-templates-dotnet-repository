@@ -1,21 +1,21 @@
 <Project>
   <PropertyGroup>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
-    <PackageVersion Include="FluentAssertions" Version="8.6.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageVersion Include="coverlet.msbuild" />
+    <PackageVersion Include="FluentAssertions" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" />
     <!-- Tests -->
-    <PackageVersion Include="coverlet.collector" PrivateAssets="all" Version="6.0.4">
+    <PackageVersion Include="coverlet.collector" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="Moq" Version="4.20.69" />
-    <PackageVersion Include="Objectivity.AutoFixture.XUnit2.AutoMoq" Version="3.6.3" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4">
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" />
+    <PackageVersion Include="Moq" />
+    <PackageVersion Include="Objectivity.AutoFixture.XUnit2.AutoMoq" />
+    <PackageVersion Include="xunit" />
+    <PackageVersion Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>

@@ -18,8 +18,8 @@
     <File Path="scripts/run-sonar-build-test.ps1" />
   </Folder>
   <Folder Name="/tests/">
-    <File Path="tests/.editorconfig" />
     <Project Path="tests/ConsoleApp.Tests/ConsoleApp.Tests.csproj" />
+    <File Path="tests/.editorconfig" />
   </Folder>
   <Project Path="src/ConsoleApp/ConsoleApp.csproj" />
 </Solution>
