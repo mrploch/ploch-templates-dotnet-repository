@@ -23,7 +23,7 @@
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers"  Version="9.0.0" />
     <GlobalPackageReference Update="Roslynator.Analyzers" Version="4.5.0" />
-    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.15.0.120848">
+    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.16.1.129956">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </GlobalPackageReference>
