@@ -1,4 +1,11 @@
 <Solution>
+  <Folder Name="/ploch-common/">
+    <Project Path="../ploch-common/src/Common/Ploch.Common.csproj" />
+  </Folder>
+  <Folder Name="/ploch-common/tests/">
+    <Project Path="../ploch-common/tests/Common.Net9.Tests/Ploch.Common.Net9.Tests.csproj" />
+    <Project Path="../ploch-common/tests/Common.Tests/Ploch.Common.Tests.csproj" />
+  </Folder>
   <Folder Name="/repository/">
     <File Path=".codacy.yml" />
     <File Path=".dockerignore" />
@@ -16,6 +23,18 @@
     <File Path="scripts/Clean-DocFx.ps1" />
     <File Path="scripts/publish-nugetorg.ps1" />
     <File Path="scripts/run-sonar-build-test.ps1" />
+  </Folder>
+  <Folder Name="/testing-support/">
+    <Project Path="../ploch-common/src/TestingSupport.FluentAssertions/Ploch.TestingSupport.FluentAssertions.csproj" />
+    <Project Path="../ploch-common/src/TestingSupport.XUnit3.AutoMoq/Ploch.TestingSupport.XUnit3.AutoMoq.csproj" />
+    <Project Path="../ploch-common/src/TestingSupport.XUnit3.Dependencies/Ploch.TestingSupport.XUnit3.Dependencies.csproj" />
+    <Project Path="../ploch-common/src/TestingSupport.XUnit3/Ploch.TestingSupport.XUnit3.csproj" />
+    <Project Path="../ploch-common/src/TestingSupport/Ploch.TestingSupport.csproj" />
+  </Folder>
+  <Folder Name="/testing-support/tests/">
+    <Project Path="../ploch-common/tests/TestingSupport.FluentAssertions.Tests/Ploch.TestingSupport.FluentAssertions.Tests.csproj" />
+    <Project Path="../ploch-common/tests/TestingSupport.Tests/Ploch.TestingSupport.Tests.csproj" />
+    <Project Path="../ploch-common/tests/TestingSupport.XUnit3.Tests/Ploch.TestingSupport.XUnit3.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ConsoleApp.Tests/ConsoleApp.Tests.csproj" />

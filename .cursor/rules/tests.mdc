@@ -1,0 +1,37 @@
+---
+description: Test file requirements and relationships
+---
+
+# Test Requirements
+
+## General
+
+- Tests verify implementation matches specification files.
+- Tests validate observable behaviour.
+- Include edge cases, negative cases, and meaningful coverage.
+- Use descriptive names and logical grouping. Comment complex setups.
+- Test observable behaviour, not implementation details if possible
+- Structure tests using the **Arrange, Act, Assert** pattern, but don't use it dogmatically if it doesn't fit the test scenario and don't put comments like `// Arrange`, `// Act`, `// Assert` if the test is simple and it's clear which part is which.
+- Mock external dependencies.
+
+## Testing Frameworks
+
+- Unit and integration testing is done using [xUnit framework](https://xunit.net/).
+- Additionally we use:
+  - [FluentAssertions](https://fluentassertions.com/) for more readable assertions,
+  - [Moq](https://github.com/devlooped/moq) for mocking dependencies
+  - [AutoFixture](https://github.com/AutoFixture/AutoFixture) for automatic generation of test data
+  - [AutoFixture.AutoMoq](https://www.nuget.org/packages/AutoFixture.AutoMoq) to automatically create mock objects with Moq and passing them to the test methods
+
+## Ploch.TestingSupport libraries
+
+We have a set of libraries / projects that help with testing. They are a part of [Ploch.Common project](https://github.com/mrploch/ploch-common) which is public.
+
+Beside the helpers, there's also a library called `Ploch.TestingSupport.XUnit3.Dependencies` which is something like a meta-package that references all the necessary dependencies for testing with xUnit 3, FluentAssertions, Moq and AutoFixture. This way we can just reference this one package in our test projects and get all the necessary dependencies.
+
+## Naming Conventions
+
+The tests methods should be named as`TestedMethodName_should_explain_expected_behaviour`.
+For example, if we have a method called `CalculateTotal`, the test method should be named something like `CalculateTotal_should_return_correct_total_given_valid_inputs`.
+
+If the test is an integration test, and doesn't strictly validate a single method, then use a more descriptive name that explains the scenario being tested, e.g. `ComponentName_should_explain_expected_behaviour`, for example `UserService_should_return_user_details_when_user_exists`.

@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Objectivity.AutoFixture.XUnit2.AutoMoq.Attributes;
+using Ploch.TestingSupport.XUnit3.AutoMoq;
 
 namespace ConsoleApp.Tests;
 
