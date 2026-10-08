@@ -392,3 +392,15 @@ codestream.xml
 /.idea/.idea.Ploch.DotNetRepository.Data/.idea/vcs.xml
 /.idea/**/*copilot*
 **/.idea/codestream.xml
+.agentbridge/conversation.db
+.agentbridge/conversation.db-shm
+.agentbridge/conversation.db-wal
+.claude/settings.json
+.claude/rules/domain-model.md
+.claude/settings.json
+.claude/settings.json
+.idea/.idea.Ploch.DotNetRepository/.idea/AICommit.xml
+.idea/.idea.Ploch.DotNetRepository.WithData/.idea/.gitignore
+.idea/.idea.Ploch.DotNetRepository.WithData/.idea/.name
+.idea/.idea.Ploch.DotNetRepository.WithData/.idea/conventionalCommit.xml
+.idea/.idea.Ploch.DotNetRepository.WithData/.idea/indexLayout.xml

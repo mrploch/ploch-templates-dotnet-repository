@@ -41,4 +41,8 @@
     <File Path="tests/.editorconfig" />
   </Folder>
   <Project Path="src/ConsoleApp/ConsoleApp.csproj" />
+  <Project Path="src/MyApp.DomainModel/Ploch.MyApp.DomainModel.csproj" />
+  <Project Path="src/MyApp.Data/Ploch.MyApp.Data.csproj" />
+  <Project Path="src/MyApp.Data.SqLite/Ploch.MyApp.Data.SqLite.csproj" />
+  <Project Path="src/MyApp.Data.SqlServer/Ploch.MyApp.Data.SqlServer.csproj" />
 </Solution>

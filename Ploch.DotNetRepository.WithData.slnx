@@ -1,0 +1,184 @@
+<Solution>
+  <Folder Name="/common-libs/" />
+  <Folder Name="/common-libs/ploch-commandline/">
+    <Project Path="../ploch-commandline/src/Spectre/CommandLine.Spectre.Serilog/Ploch.CommandLine.Spectre.Serilog.csproj" />
+    <Project Path="..\ploch-commandline\src\Spectre\CommandLine.Spectre.FluentValidation\PlochCommandLine.Spectre.FluentValidation.csproj" />
+    <Project Path="..\ploch-commandline\src\Spectre\CommandLine.Spectre\Ploch.CommandLine.Spectre.csproj" />
+    <Project Path="..\ploch-commandline\src\Spectre\CommandLine.UseCases\Ploch.CommandLine.UseCases.csproj" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-commandline/_repository_/">
+    <File Path="../ploch-commandline/README.md" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-commandline/_repository_/config/">
+    <File Path="../mrploch-development/dependencies/Common.Packages.props" />
+    <File Path="../mrploch-development/dependencies/Ploch.Packages.props" />
+    <File Path="../mrploch-development/dependencies/Spectre.Console.Packages.props" />
+    <File Path="../ploch-commandline/.codacy.yml" />
+    <File Path="../ploch-commandline/.dockerignore" />
+    <File Path="../ploch-commandline/.editorconfig" />
+    <File Path="../ploch-commandline/.gitattributes" />
+    <File Path="../ploch-commandline/.gitignore" />
+    <File Path="../ploch-commandline/azure-pipelines.yml" />
+    <File Path="../ploch-commandline/Directory.Build.props" />
+    <File Path="../ploch-commandline/docker-compose.yml" />
+    <File Path="../ploch-commandline/dotcover.settings.xml" />
+    <File Path="../ploch-commandline/global.json" />
+    <File Path="../ploch-commandline/NuGet.Config" />
+    <File Path="../ploch-commandline/Ploch.CommandLine.sln.DotSettings" />
+    <File Path="../ploch-commandline/Ploch.CommandLine.sln.DotSettings.user" />
+    <File Path="../ploch-commandline/qodana.sarif.json" />
+    <File Path="../ploch-commandline/qodana.yaml" />
+    <File Path="..\mrploch-development\dependencies\Analyzers.Global.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\MicrosoftExtensions.Net9.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\Serilog.Logging.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\Testing.Packages.props" />
+    <File Path="..\ploch-commandline\Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-commandline/_tests_/">
+    <File Path="..\ploch-commandline\tests\.editorconfig" />
+    <Project Path="..\ploch-commandline\tests\Spectre\CommandLine.Spectre.Tests\Ploch.CommandLine.Spectre.Tests.csproj" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-common/">
+    <Project Path="../ploch-common/src/Common.AppServices.Web/Ploch.Common.AppServices.Web.csproj" />
+    <Project Path="../ploch-common/src/Common.AppServices/Ploch.Common.AppServices.csproj" />
+    <Project Path="../ploch-common/src/Common.Dependencies/Ploch.Common.Dependencies.csproj" />
+    <Project Path="../ploch-common/src/Common.Net9/Ploch.Common.Net9.csproj" />
+    <Project Path="../ploch-common/src/Common/Ploch.Common.csproj" />
+    <Project Path="..\ploch-common\src\Common.DependencyInjection.Hosting\Ploch.Common.DependencyInjection.Hosting.csproj" />
+    <Project Path="..\ploch-common\src\Common.DependencyInjection\Ploch.Common.DependencyInjection.csproj" />
+    <Project Path="..\ploch-common\src\Common.Extensions.Configuration\Ploch.Common.Extensions.Configuration.csproj" />
+    <Project Path="..\ploch-common\src\Common.ObjectBuilder\Ploch.Common.ObjectBuilder.csproj" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-common/Apps/">
+    <Project Path="../ploch-common/src/Common.Apps/Shared/Ploch.Common.Apps.Shared.csproj" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-common/Apps/Actions/">
+    <Project Path="../ploch-common/src/Common.Apps/Apps.Actions/Actions.Model/Ploch.Common.Apps.Actions.Model.csproj" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-common/Serialization/">
+    <Project Path="../ploch-common/src/Common.Serialization.SystemTextJson.ExtensionsDependencyInjection/Ploch.Common.Serialization.SystemTextJson.ExtensionsDependencyInjection.csproj" />
+    <Project Path="../ploch-common/src/Common.Serialization.SystemTextJson/Ploch.Common.Serialization.SystemTextJson.csproj" />
+    <Project Path="../ploch-common/src/Common.Serialization/Ploch.Common.Serialization.csproj" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-common/_repository_/">
+    <File Path="../mrploch-development/dependencies/Common.Packages.props" />
+    <File Path="../mrploch-development/dependencies/Ploch.Packages.props" />
+    <File Path="../ploch-common/.dockerignore" />
+    <File Path="../ploch-common/.editorconfig" />
+    <File Path="../ploch-common/.gitattributes" />
+    <File Path="../ploch-common/.gitignore" />
+    <File Path="../ploch-common/.junie/guidelines.md" />
+    <File Path="../ploch-common/Directory.Build.props" />
+    <File Path="../ploch-common/Directory.Packages.props" />
+    <File Path="../ploch-common/dotcover.settings.xml" />
+    <File Path="../ploch-common/dotnet-releaser.toml" />
+    <File Path="../ploch-common/global.json" />
+    <File Path="../ploch-common/grial-settings.json" />
+    <File Path="../ploch-common/LICENSE" />
+    <File Path="../ploch-common/my-schema.json" />
+    <File Path="../ploch-common/omnisharp.json" />
+    <File Path="../ploch-common/Ploch.Common.Data.sln.DotSettings.user" />
+    <File Path="../ploch-common/Ploch.Common.ddargs.json" />
+    <File Path="../ploch-common/Ploch.Common.sln.DotSettings" />
+    <File Path="../ploch-common/Ploch.Common.sln.DotSettings.user" />
+    <File Path="../ploch-common/qodana.sarif.json" />
+    <File Path="../ploch-common/qodana.yaml" />
+    <File Path="../ploch-common/README.md" />
+    <File Path="../ploch-common/release-notes.md" />
+    <File Path="..\mrploch-development\dependencies\Analyzers.Global.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\MicrosoftExtensions.Net9.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\Serilog.Logging.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\Testing.Packages.props" />
+    <File Path="..\ploch-common\stylecop.json" />
+    <File Path="..\ploch-common\stylecop.ruleset" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-common/_tests_/">
+    <File Path="..\ploch-common\tests\.editorconfig" />
+    <Project Path="../ploch-common/src/TestingSupport.MockConsoleApp/Ploch.TestingSupport.MockConsoleApp.csproj" />
+    <Project Path="../ploch-common/src/TestingSupport.XUnit2.Dependencies/Ploch.TestingSupport.XUnit2.Dependencies.csproj" />
+    <Project Path="../ploch-common/tests/Common.Apps/Apps.Shared.Tests/Ploch.Common.Apps.Shared.Tests.csproj" />
+    <Project Path="../ploch-common/tests/Common.DependencyInjection.Tests/Ploch.Common.DependencyInjection.Tests.csproj" />
+    <Project Path="../ploch-common/tests/Common.Net6.Tests/Ploch.Common.Net6.Tests.csproj" />
+    <Project Path="../ploch-common/tests/Common.Net9.Tests/Ploch.Common.Net9.Tests.csproj" />
+    <Project Path="../ploch-common/tests/Common.Serialization.SystemTextJson.ExtensionsDependencyInjection.Tests/Ploch.Common.Serialization.SystemTextJson.ExtensionsDependencyInjection.Tests.csproj" />
+    <Project Path="../ploch-common/tests/Common.Serialization.SystemTextJson.Tests/Ploch.Common.Serialization.SystemTextJson.Tests.csproj" />
+    <Project Path="../ploch-common/tests/Common.Serialization.Tests/Ploch.Common.Serialization.Tests.csproj" />
+    <Project Path="..\ploch-common\src\TestingSupport.FluentAssertions\Ploch.TestingSupport.FluentAssertions.csproj" />
+    <Project Path="..\ploch-common\src\TestingSupport.XUnit3.AutoMoq\Ploch.TestingSupport.XUnit3.AutoMoq.csproj" />
+    <Project Path="..\ploch-common\src\TestingSupport.XUnit3.Dependencies\Ploch.TestingSupport.XUnit3.Dependencies.csproj" />
+    <Project Path="..\ploch-common\src\TestingSupport.XUnit3\Ploch.TestingSupport.XUnit3.csproj" />
+    <Project Path="..\ploch-common\src\TestingSupport\Ploch.TestingSupport.csproj" />
+    <Project Path="..\ploch-common\tests\Common.Apps\Apps.Model.Tests\Ploch.Common.Apps.Model.Tests.csproj" />
+    <Project Path="..\ploch-common\tests\Common.ObjectBuilder.Tests\Ploch.Common.ObjectBuilder.Tests.csproj" />
+    <Project Path="..\ploch-common\tests\Common.Tests\Ploch.Common.Tests.csproj" />
+    <Project Path="..\ploch-common\tests\TestAssemblies\Common.Tests.TestAssembly1\Ploch.Common.Tests.TestAssembly1.csproj" />
+    <Project Path="..\ploch-common\tests\TestAssemblies\Common.Tests.TestAssembly2\Ploch.Common.Tests.TestAssembly2.csproj" />
+    <Project Path="..\ploch-common\tests\TestAssemblies\Common.Tests.TestTypes\Ploch.Common.Tests.TestTypes.csproj" />
+    <Project Path="..\ploch-common\tests\TestingSupport.FluentAssertions.Tests\Ploch.TestingSupport.FluentAssertions.Tests.csproj" />
+    <Project Path="..\ploch-common\tests\TestingSupport.Tests\Ploch.TestingSupport.Tests.csproj" />
+    <Project Path="..\ploch-common\tests\TestingSupport.XUnit3.Tests\Ploch.TestingSupport.XUnit3.Tests.csproj" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-data/">
+    <Project Path="../ploch-data/src/Data.EFCore.IntegrationTesting/Ploch.Data.EFCore.IntegrationTesting.csproj" />
+    <Project Path="../ploch-data/src/Data.EFCore.SqLite/Ploch.Data.EFCore.SqLite.csproj" />
+    <Project Path="../ploch-data/src/Data.EFCore/Ploch.Data.EFCore.csproj" />
+    <Project Path="../ploch-data/src/Data.GenericRepository/Data.GenericRepository.EFCore.DependencyInjection/Ploch.Data.GenericRepository.EFCore.DependencyInjection.csproj" />
+    <Project Path="../ploch-data/src/Data.GenericRepository/Data.GenericRepository.EFCore.IntegrationTesting/Ploch.Data.GenericRepository.EFCore.IntegrationTesting.csproj" />
+    <Project Path="../ploch-data/src/Data.GenericRepository/Data.GenericRepository.EFCore.Specification/Ploch.Data.GenericRepository.EFCore.Specification.csproj" />
+    <Project Path="../ploch-data/src/Data.GenericRepository/Data.GenericRepository.EFCore/Ploch.Data.GenericRepository.EFCore.csproj" />
+    <Project Path="../ploch-data/src/Data.GenericRepository/Data.GenericRepository/Ploch.Data.GenericRepository.csproj" />
+    <Project Path="../ploch-data/src/Data.Model/Ploch.Data.Model.csproj" />
+    <Project Path="..\ploch-data\src\Data.EFCore.SqlServer\Ploch.Data.EFCore.SqlServer.csproj" />
+    <Project Path="..\ploch-data\src\Data.StandardDataSets\Ploch.Data.StandardDataSets.csproj" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-data/repository/">
+    <File Path="../mrploch-development/dependencies/Common.Packages.props" />
+    <File Path="../mrploch-development/dependencies/Ploch.Packages.props" />
+    <File Path="../ploch-data/.codacy.yml" />
+    <File Path="../ploch-data/.dockerignore" />
+    <File Path="../ploch-data/.editorconfig" />
+    <File Path="../ploch-data/.gitattributes" />
+    <File Path="../ploch-data/.gitignore" />
+    <File Path="../ploch-data/Directory.Build.props" />
+    <File Path="../ploch-data/Directory.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\Analyzers.Global.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\MicrosoftExtensions.Net9.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\Serilog.Logging.Packages.props" />
+    <File Path="..\mrploch-development\dependencies\Testing.Packages.props" />
+  </Folder>
+  <Folder Name="/common-libs/ploch-data/_tests_/">
+    <File Path="..\ploch-data\tests\.editorconfig" />
+    <Project Path="../ploch-data/tests/Data.EFCore.SqLite.Tests/Ploch.Data.EFCore.SqLite.Tests.csproj" />
+    <Project Path="..\ploch-data\tests\Data.EFCore.SqlServer.Tests\Ploch.Data.EFCore.SqlServer.Tests.csproj" />
+    <Project Path="..\ploch-data\tests\Data.EFCore.Tests\Ploch.Data.EFCore.Tests.csproj" />
+    <Project Path="..\ploch-data\tests\Data.GenericRepository\Data.GenericRepository.EFCore.IntegrationTests\Ploch.Data.GenericRepository.EFCore.IntegrationTests.csproj" />
+    <Project Path="..\ploch-data\tests\Data.StandardDataSets.Tests\Ploch.Data.StandardDataSets.Tests.csproj" />
+  </Folder>
+  <Folder Name="/repository/">
+    <File Path=".codacy.yml" />
+    <File Path=".dockerignore" />
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="README.md" />
+    <File Path="Ploch.DotNetRepository.nuspec" />
+  </Folder>
+  <Folder Name="/scripts/">
+    <File Path="scripts/build-helpers.ps1" />
+    <File Path="scripts/build-test.ps1" />
+    <File Path="scripts/Clean-DocFx.ps1" />
+    <File Path="scripts/publish-nugetorg.ps1" />
+    <File Path="scripts/run-sonar-build-test.ps1" />
+  </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/.editorconfig" />
+    <Project Path="tests/MyApp.Tests/Ploch.MyApp.Tests.csproj" />
+  </Folder>
+  <Project Path="src/MyApp/Ploch.MyApp.csproj" />
+  <Project Path="src/MyApp.DomainModel/Ploch.MyApp.DomainModel.csproj" />
+  <Project Path="src/MyApp.Data/Ploch.MyApp.Data.csproj" />
+  <Project Path="src/MyApp.Data.SqLite/Ploch.MyApp.Data.SqLite.csproj" />
+  <Project Path="src/MyApp.Data.SqlServer/Ploch.MyApp.Data.SqlServer.csproj" />
+</Solution>
