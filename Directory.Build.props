@@ -1,70 +1,77 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
+<!--
+    Repository-wide MSBuild settings, imported before every project file.
+
+    Template note: scripts/Initialize-Repository.ps1 replaces "Ploch.TemplateLibrary" and
+    "ploch-templates-dotnet-repository" throughout the repository. Review the Product group
+    below after running it.
+-->
 <Project>
-  <PropertyGroup Label="Product">
-    <Authors>Kris Ploch</Authors>
-    <Company>Ploch</Company>
-    <Product>Ploch.DotNetRepository</Product>
-    <PackageProjectUrl>https://github.com/mrploch/ploch-templates-dotnet-repository</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/mrploch/ploch-templates-dotnet-repository.git</RepositoryUrl>
-    <Description>Ploch's .NET Repository Template</Description>
-    <Copyright>Kris Ploch $([System.DateTime]::Now.Year)</Copyright>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-  </PropertyGroup>
-  <PropertyGroup Label="Build">
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisLevel>latest-Recommended</AnalysisLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <IsTestProject>$(MSBuildProjectName.EndsWith('Tests'))</IsTestProject>
-  </PropertyGroup>
-  <PropertyGroup Label="Versioning">
-    <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>-prerelease</VersionSuffix>
-    <BuildNumber>$([System.DateTime]::UtcNow.ToString("yyMMddHH"))</BuildNumber>
-    <FullVersionSuffix>$(VersionSuffix)-$(BuildNumber)</FullVersionSuffix>
-    <Version>$(VersionPrefix)$(FullVersionSuffix)</Version>
-    <FileVersion>$(InformationalVersion)</FileVersion>
-    <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
-  </PropertyGroup>
-  <PropertyGroup Label="ProjectType">
-    <IsReleaseBuild>false</IsReleaseBuild>
-    <IsReleaseBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</IsReleaseBuild>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
+    <PropertyGroup Label="Product">
+        <Authors>Kris Ploch</Authors>
+        <Company>Ploch</Company>
+        <Product>Ploch.TemplateLibrary</Product>
+        <Description>Ploch.TemplateLibrary library.</Description>
+        <Copyright>Kris Ploch $([System.DateTime]::Now.Year)</Copyright>
+        <PackageProjectUrl>https://github.com/mrploch/ploch-templates-dotnet-repository</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mrploch/ploch-templates-dotnet-repository.git</RepositoryUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="$(IsTestProject)">
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$(IsTestProject)">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IsTestProject>false</IsTestProject>
-  </PropertyGroup>
+    <PropertyGroup Label="Build">
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>latest-Recommended</AnalysisLevel>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <!-- CI builds in Release, so every analyser warning fails the pull request instead of accumulating. -->
+        <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+        <!-- GitHub Actions sets CI=true; this makes paths in PDBs and packages deterministic. -->
+        <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+        <IsTestProject>$(MSBuildProjectName.EndsWith('Tests'))</IsTestProject>
+    </PropertyGroup>
 
-  <Target Name="PrintSettings" BeforeTargets="Build">
-    <Message Text="Building $(MSBuildProjectName) with settings:" Importance="high" />
-    <Message Text="MSBuildProjectName -> '$(MSBuildProjectName)'" Importance="high" />
-    <Message Text="Configuration -> '$(Configuration)' " Importance="high" />
-    <Message Text="DebugType -> '$(DebugType)' " Importance="high" />
-    <Message Text="DebugSymbols -> '$(DebugSymbols)' " Importance="high" />
-    <Message Text="AssemblyName -> '$(AssemblyName)' " Importance="high" />
-    <Message Text="IsTestProject -> '$(IsTestProject)' " Importance="high" />
-    <Message Text="GeneratePackageOnBuild -> '$(GeneratePackageOnBuild)' " Importance="high" />
-    <Message Text="GenerateDocumentationFile -> '$(GenerateDocumentationFile)' " Importance="high" />
-    <Message Text="IsPackable -> '$(IsPackable)' " Importance="high" />
-  </Target>
-  <PropertyGroup>
-    <Nullable>enable</Nullable>
-    <LangVersion>default</LangVersion>
-  </PropertyGroup>
+    <PropertyGroup Label="Packaging">
+        <!-- Nothing is packable unless it opts in: libraries under src/ do, below. -->
+        <IsPackable>false</IsPackable>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <!--
+        Shipping libraries live under src/. They are packable, and their public API must be documented:
+        GenerateDocumentationFile turns on CS1591, which fails Release builds for undocumented public members.
+    -->
+    <PropertyGroup Condition="!$(IsTestProject) And $(MSBuildProjectDirectory.StartsWith('$(MSBuildThisFileDirectory)src'))">
+        <IsPackable>true</IsPackable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(IsPackable)' == 'true'">
+        <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="/" Visible="false" />
+    </ItemGroup>
+
+    <!-- Versions come from version.json (Nerdbank.GitVersioning); SourceLink is built into the .NET SDK. -->
+    <ItemGroup>
+        <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all" />
+    </ItemGroup>
+
+    <!--
+        Coverage is collected by coverlet.msbuild in every test project, so `dotnet test /p:CollectCoverage=true`
+        always produces a report. A test project without it would silently report nothing.
+    -->
+    <ItemGroup Condition="$(IsTestProject)">
+        <PackageReference Include="coverlet.msbuild" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" Visible="false" />
+    </ItemGroup>
 </Project>

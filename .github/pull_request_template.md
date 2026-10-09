@@ -1,10 +1,23 @@
-## Describe your changes
+## Summary
 
-## Issue ticket number and link
+<!-- What does this change do, and why? -->
 
-## Checklist before requesting a review
+## Related issue
 
-- [ ] I have performed a self-review of my code
-- [ ] If it is a core feature, I have added thorough tests.
-- [ ] Do we need to implement analytics?
-- [ ] Will this be part of a product update? If yes, please write one phrase about this update.
+<!-- Use a closing keyword so the issue closes on merge, for example: Closes PLO-123 -->
+
+## Changes
+
+-
+
+## Testing
+
+<!-- Tests added or changed, and how the change was verified manually. -->
+
+## Checklist
+
+- [ ] The build has no warnings (`dotnet build -c Release`)
+- [ ] All tests pass, and new or changed code is covered by tests
+- [ ] Public APIs have XML documentation
+- [ ] README and other documentation reflect the change
+- [ ] A `change-log/` entry describes any user-visible change
