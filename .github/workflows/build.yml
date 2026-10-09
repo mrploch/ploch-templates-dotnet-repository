@@ -253,6 +253,10 @@ jobs:
         env:
           PERCENT: ${{ steps.diff-coverage.outputs.percent }}
         run: |
+          if ! [[ "$DIFF_COVERAGE_THRESHOLD" =~ ^[0-9]+([.][0-9]+)?$ ]] || awk -v t="$DIFF_COVERAGE_THRESHOLD" 'BEGIN { exit !(t > 100) }'; then
+            echo "::error title=Invalid coverage threshold::DIFF_COVERAGE_THRESHOLD must be a number from 0 to 100; got '$DIFF_COVERAGE_THRESHOLD'."
+            exit 1
+          fi
           if awk -v p="$PERCENT" -v t="$DIFF_COVERAGE_THRESHOLD" 'BEGIN { exit !(p + 0 >= t + 0) }'; then
             echo "Changed-line coverage ${PERCENT}% meets the ${DIFF_COVERAGE_THRESHOLD}% threshold."
           else

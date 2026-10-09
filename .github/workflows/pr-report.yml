@@ -31,6 +31,8 @@ jobs:
           name: Test Results
           path: "**/*.trx"
           reporter: dotnet-trx
+          # Create the "Test Results" check run; the default writes only a job summary.
+          use-actions-summary: "false"
           # A build that failed before running tests has no results; the Build check already reports that.
           fail-on-empty: false
 
@@ -55,7 +57,8 @@ jobs:
           github-token: ${{ github.token }}
 
       # The artefact was produced by pull-request code, so its contents are untrusted. The pull-request number is
-      # accepted only if it is numeric and that pull request's head is exactly the commit the build ran on.
+      # accepted only if it is numeric and that pull request's head is exactly the commit, branch and repository
+      # the build ran on, so a forged number cannot direct the comment at an unrelated pull request.
       - name: Validate pull request
         id: pr
         if: steps.download.outcome == 'success'
@@ -63,6 +66,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
           RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          RUN_HEAD_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
         run: |
           if [ ! -f coverage/coverage-report/pr-number.txt ] || [ ! -f coverage/coverage-report/comment.md ]; then
             echo "::warning title=No coverage comment::The build uploaded no pull-request coverage summary."
@@ -73,7 +78,12 @@ jobs:
             echo "::error title=Invalid pull-request number::Refusing to comment: '$number' is not a number."
             exit 1
           fi
-          head_sha=$(gh api "repos/${REPOSITORY}/pulls/${number}" --jq .head.sha)
+          read -r head_sha head_branch head_repository < <(gh api "repos/${REPOSITORY}/pulls/${number}" \
+            --jq '[.head.sha, .head.ref, .head.repo.full_name] | @tsv')
+          if [ "$head_branch" != "$RUN_HEAD_BRANCH" ] || [ "$head_repository" != "$RUN_HEAD_REPOSITORY" ]; then
+            echo "::error title=Mismatched pull request::Pull request #${number} is not the pull request this build ran for. Refusing to comment."
+            exit 1
+          fi
           if [ "$head_sha" != "$RUN_HEAD_SHA" ]; then
             echo "::warning title=Stale coverage report::Pull request #${number} has moved on to ${head_sha}; this report is for ${RUN_HEAD_SHA}. Skipping the comment."
             exit 0

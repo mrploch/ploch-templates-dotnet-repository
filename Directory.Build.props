@@ -49,7 +49,7 @@
         Shipping libraries live under src/. They are packable, and their public API must be documented:
         GenerateDocumentationFile turns on CS1591, which fails Release builds for undocumented public members.
     -->
-    <PropertyGroup Condition="!$(IsTestProject) And $(MSBuildProjectDirectory.StartsWith('$(MSBuildThisFileDirectory)src'))">
+    <PropertyGroup Condition="!$(IsTestProject) And $([MSBuild]::EnsureTrailingSlash('$(MSBuildProjectDirectory)').StartsWith('$([MSBuild]::EnsureTrailingSlash('$(MSBuildThisFileDirectory)src'))'))">
         <IsPackable>true</IsPackable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>

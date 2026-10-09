@@ -14,8 +14,11 @@
     Template Bootstrap workflow that tests it.
 
     Run it once, from the repository root, straight after creating the repository with "Use this template".
-    It refuses to run with uncommitted changes, so the result can be reviewed with `git diff` and undone with
-    `git checkout .`. It is idempotent: a repository with no placeholders left is reported and left untouched.
+    Template change-log entries are deleted too: they describe the template's history, not the new repository's.
+
+    It refuses to run with uncommitted changes, so the result can be reviewed with `git status` and `git diff`,
+    and undone with `git reset --hard HEAD` (renames are staged by `git mv`, so `git checkout .` is not enough).
+    It is idempotent: a repository with no placeholders left is reported and left untouched.
 
 .PARAMETER Name
     The product's root name, which becomes the solution, project, assembly, package and namespace prefix.
@@ -45,7 +48,7 @@ param(
     [ValidatePattern('^Ploch(\.[A-Z][A-Za-z0-9]*)+$')]
     [string] $Name,
 
-    [ValidatePattern('^[a-z0-9][a-z0-9.-]*$')]
+    [ValidatePattern('^[A-Za-z0-9._-]+$')]
     [string] $RepositoryName,
 
     [switch] $KeepScript
@@ -78,6 +81,9 @@ if ($Name -match '(Tests|IntegrationTests|TestingSupport)$') {
 }
 
 $product = $Name.Substring('Ploch.'.Length)
+if ($product -ceq $ProductToken) {
+    throw "[Initialize-Repository] '$Name' is the template's own placeholder name; choose the new product's name."
+}
 $replacements = [ordered]@{
     $RepositoryToken = $RepositoryName
     $ProductToken    = $product
@@ -157,7 +163,17 @@ foreach ($path in $pathsToRename) {
     }
 }
 
-# 3. The template-only files, including this script: a repository is initialised exactly once.
+# 3. Template change-log entries: the new repository starts its own history.
+foreach ($entry in $trackedFiles | Where-Object { $_ -like 'change-log/*.md' -and $_ -ne 'change-log/README.md' }) {
+    if ($PSCmdlet.ShouldProcess($entry, 'Delete template change-log entry')) {
+        git rm --quiet -- "$entry"
+        if ($LASTEXITCODE -ne 0) {
+            throw "[Initialize-Repository] git rm failed for '$entry'."
+        }
+    }
+}
+
+# 4. The template-only files, including this script: a repository is initialised exactly once.
 if (-not $KeepScript) {
     foreach ($file in $templateOnlyFiles | Where-Object { Test-Path -LiteralPath $_ }) {
         if ($PSCmdlet.ShouldProcess($file, 'Delete template-only file')) {
@@ -174,7 +190,7 @@ if (-not $WhatIfPreference) {
 [Initialize-Repository] Initialised as $Name ($RepositoryName).
 
 Next steps:
-  1. Review the changes:      git status; git diff --cached; git diff
+  1. Review the changes:      git status; git diff --cached; git diff   (undo: git reset --hard HEAD)
   2. Build and test:          dotnet build -c Release; dotnet test -c Release
   3. Commit:                  git add --all; git commit -m "chore: initialise repository from template"
   4. Finish the owner setup in README.md (SonarCloud project, secrets, branch protection).

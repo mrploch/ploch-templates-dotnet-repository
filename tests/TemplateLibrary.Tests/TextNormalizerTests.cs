@@ -29,6 +29,12 @@ public class TextNormalizerTests
     [InlineData("ALL CAPS", "all-caps")]
     [InlineData("!!!", "")]
     [InlineData("", "")]
+    [InlineData("Café au lait", "cafe-au-lait")]
+    [InlineData("  Crème brûlée, 2 portions!  ", "creme-brulee-2-portions")]
+    [InlineData("naïve—approach", "naive-approach")]
+    [InlineData("Привет world", "world")]
+    [InlineData("emoji \U0001F600 here", "emoji-here")]
+    [InlineData("math \U0001D400 letter", "math-letter")]
     public void ToSlug_should_produce_lower_case_hyphen_separated_words(string input, string expected)
     {
         TextNormalizer.ToSlug(input).Should().Be(expected);
