@@ -11,5 +11,6 @@ Every pull request with a user-visible change adds one Markdown file to this dir
 
 Use the headings `Added`, `Changed`, `Fixed`, `Removed` or `Security`.
 
-The Release workflow concatenates the entries into the GitHub release notes, then moves them to
-`change-log/archive/<version>/` in its bookkeeping pull request, so each entry is published exactly once.
+In repositories with a Release workflow (the library template), the release concatenates the entries into the
+GitHub release notes, then moves them to `change-log/archive/<version>/` in its bookkeeping pull request, so each
+entry is published exactly once.
