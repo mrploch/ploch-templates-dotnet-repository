@@ -59,10 +59,13 @@ jobs:
         working-directory: ${{ env.BOOTSTRAP_DIR }}
         run: |
           set -euo pipefail
-          if git grep -n -I -e 'TemplateLibrary' -e 'ploch-templates-dotnet-repository'; then
+          product_token=$(jq -r .productToken "$GITHUB_WORKSPACE/scripts/template.json")
+          repository_token=$(jq -r .repositoryToken "$GITHUB_WORKSPACE/scripts/template.json")
+          if git grep -n -I -e "$product_token" -e "$repository_token"; then
             echo "::error title=Template tokens left behind::Initialize-Repository.ps1 did not replace every template token."
             exit 1
           fi
           test ! -e scripts/Initialize-Repository.ps1
+          test ! -e scripts/template.json
           dotnet build Ploch.Bootstrap.Smoke.slnx --configuration Release
           dotnet test Ploch.Bootstrap.Smoke.slnx --no-build --configuration Release

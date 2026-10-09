@@ -1,0 +1,5 @@
+{
+  "$comment": "Template-only. Placeholders that scripts/Initialize-Repository.ps1 replaces; deleted on initialisation.",
+  "productToken": "TemplateLibrary",
+  "repositoryToken": "ploch-templates-dotnet-repository"
+}

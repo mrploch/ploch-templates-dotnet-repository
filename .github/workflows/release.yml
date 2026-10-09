@@ -35,7 +35,6 @@ permissions:
   contents: read
 
 env:
-  SOLUTION: Ploch.TemplateLibrary.slnx
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
@@ -76,6 +75,17 @@ jobs:
           fetch-tags: true
           # Credentials stay in .git/config because this job pushes the tag and the bookkeeping branch.
           persist-credentials: true
+
+      # The repository has exactly one solution at its root; finding it keeps this file identical in every repository.
+      - name: Locate the solution
+        run: |
+          shopt -s nullglob
+          solutions=(*.slnx *.sln)
+          if [ ${#solutions[@]} -ne 1 ]; then
+            echo "::error title=Solution not found::Expected exactly one .slnx or .sln file at the repository root; found ${#solutions[@]}."
+            exit 1
+          fi
+          echo "SOLUTION=${solutions[0]}" >> "$GITHUB_ENV"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
@@ -177,7 +187,7 @@ jobs:
           # The bookkeeping step archives exactly these entries, not ones merged after the release started.
           printf '%s\n' "${entries[@]}" > published-entries.txt
           {
-            echo "## Ploch.TemplateLibrary $VERSION"
+            echo "## ${SOLUTION%.*} $VERSION"
             echo
             found=false
             for entry in "${entries[@]}"; do

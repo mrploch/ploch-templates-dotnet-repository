@@ -4,14 +4,15 @@
     Turns a fresh copy of this template into a named repository.
 
 .DESCRIPTION
-    Replaces the template's placeholder names in every tracked text file and in file and directory names:
+    Replaces the template's placeholder names, read from scripts/template.json, in every tracked text file and in
+    file and directory names:
 
-        TemplateLibrary                    ->  the product part of -Name (for example "Orders" for "Ploch.Orders")
-        ploch-templates-dotnet-repository  ->  -RepositoryName
+        productToken     ->  the product part of -Name (for example "Orders" for "Ploch.Orders")
+        repositoryToken  ->  -RepositoryName
 
     It also removes the template-only sections of README.md (between "<!-- template-only:start -->" and
-    "<!-- template-only:end -->"), then deletes the template-only files: this script and the
-    Template Bootstrap workflow that tests it.
+    "<!-- template-only:end -->"), then deletes the template-only files: this script, scripts/template.json and
+    the Template Bootstrap workflow that tests it.
 
     Run it once, from the repository root, straight after creating the repository with "Use this template".
     Template change-log entries are deleted too: they describe the template's history, not the new repository's.
@@ -57,8 +58,6 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$ProductToken = 'TemplateLibrary'
-$RepositoryToken = 'ploch-templates-dotnet-repository'
 $TemplateOnlyPattern = '(?s)\r?\n?<!-- template-only:start -->.*?<!-- template-only:end -->\r?\n?'
 
 $root = (git rev-parse --show-toplevel 2>$null)
@@ -67,7 +66,19 @@ if (-not $root) {
 }
 Set-Location $root
 $scriptPath = [System.IO.Path]::GetRelativePath($root, $PSCommandPath).Replace('\', '/')
-$templateOnlyFiles = @($scriptPath, '.github/workflows/template-bootstrap.yml')
+$templateConfigPath = 'scripts/template.json'
+$templateOnlyFiles = @($scriptPath, $templateConfigPath, '.github/workflows/template-bootstrap.yml')
+
+if (-not (Test-Path -LiteralPath $templateConfigPath)) {
+    Write-Information "[Initialize-Repository] $templateConfigPath is gone; the repository is already initialised." -InformationAction Continue
+    return
+}
+$templateConfig = Get-Content -LiteralPath $templateConfigPath -Raw | ConvertFrom-Json
+$ProductToken = $templateConfig.productToken
+$RepositoryToken = $templateConfig.repositoryToken
+if (-not $ProductToken -or -not $RepositoryToken) {
+    throw "[Initialize-Repository] $templateConfigPath must define productToken and repositoryToken."
+}
 
 if (-not $RepositoryName) {
     $remote = git remote get-url origin 2>$null
