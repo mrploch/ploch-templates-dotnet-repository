@@ -211,11 +211,30 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
         run: |
-          if gh release view "$TAG" > /dev/null 2>&1; then
-            echo "The GitHub release $TAG already exists."
-          else
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
             gh release create "$TAG" ./artifacts/* --title "$TAG" --notes-file release-notes.md --verify-tag
+            exit 0
           fi
+
+          # gh creates a release as a draft, uploads the assets, then publishes it, so an earlier run that failed part-way
+          # can leave a draft or a release without every package. Complete it: an asset whose upload never finished
+          # (state "starter") holds no data and is deleted, finished assets are kept, and whatever is missing is
+          # uploaded. Then it is published with the notes.
+          echo "The GitHub release $TAG already exists; completing it."
+          unfinished=$(gh release view "$TAG" --json assets --jq '.assets[] | select(.state != "uploaded") | .name')
+          while IFS= read -r name; do
+            if [ -n "$name" ]; then
+              echo "Deleting the unfinished upload $name."
+              gh release delete-asset "$TAG" "$name" --yes
+            fi
+          done <<< "$unfinished"
+          uploaded=$(gh release view "$TAG" --json assets --jq '.assets[] | select(.state == "uploaded") | .name')
+          for asset in ./artifacts/*; do
+            if ! grep -Fxq -- "$(basename "$asset")" <<< "$uploaded"; then
+              gh release upload "$TAG" "$asset"
+            fi
+          done
+          gh release edit "$TAG" --title "$TAG" --notes-file release-notes.md --draft=false
 
       # Archives the published change-log entries and moves version.json on to the next minor prerelease, through a
       # pull request so that branch protection on main still applies.
