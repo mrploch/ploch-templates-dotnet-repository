@@ -7,7 +7,10 @@
     Replaces the template's placeholder names, read from scripts/template.json, in every tracked text file and in
     file and directory names:
 
-        productToken     ->  the product part of -Name (for example "Orders" for "Ploch.Orders")
+        productToken     ->  the product part of -Name (for example "Orders" for "Ploch.Orders"). Where the token
+                             is directly followed by an identifier character, as in "TemplateAppDbContext", the
+                             product is used without its dots ("Text.Slugs" -> "TextSlugsDbContext"), so a
+                             multi-segment name still produces valid C# identifiers.
         repositoryToken  ->  -RepositoryName
 
     It also removes the template-only sections of README.md (between "<!-- template-only:start -->" and
@@ -95,9 +98,13 @@ $product = $Name.Substring('Ploch.'.Length)
 if ($product -ceq $ProductToken) {
     throw "[Initialize-Repository] '$Name' is the template's own placeholder name; choose the new product's name."
 }
-$replacements = [ordered]@{
-    $RepositoryToken = $RepositoryName
-    $ProductToken    = $product
+# "Text.Slugs" -> "TextSlugs": used where the token is part of a longer identifier, such as a DbContext class name.
+$productIdentifier = $product.Replace('.', '')
+$identifierTokenPattern = [regex]::Escape($ProductToken) + '(?=[A-Za-z0-9_])'
+
+function Convert-ProductToken([string] $Text) {
+    $withIdentifiers = [regex]::Replace($Text, $identifierTokenPattern, $productIdentifier)
+    return $withIdentifiers.Replace($ProductToken, $product)
 }
 
 $trackedFiles = @(git ls-files) | Where-Object { $_ -notin $templateOnlyFiles }
@@ -113,6 +120,53 @@ if ($filesWithTokens.Count -eq 0) {
 
 if (-not $WhatIfPreference -and (git status --porcelain)) {
     throw '[Initialize-Repository] The working tree has uncommitted changes. Commit or stash them first, so the result can be reviewed and undone.'
+}
+
+# Renaming a namespace can change where its using directive sorts ("Ploch.TemplateApp" sorts after "Ploch.Data",
+# "Ploch.Accounts" before it), which StyleCop then reports as SA1210. This re-sorts each file's leading block of
+# using directives the way StyleCop expects: System namespaces first, then the others alphabetically, then
+# "using static" directives, then aliases.
+function Format-UsingDirective([string] $Text) {
+    $lines = $Text -split '\r?\n'
+    $first = -1
+    $last = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^using [^(]+;\s*$') {
+            if ($first -lt 0) { $first = $i }
+            $last = $i
+        }
+        elseif ($first -ge 0 -and $lines[$i].Trim() -ne '') {
+            break
+        }
+    }
+    if ($first -lt 0) {
+        return $Text
+    }
+
+    $directives = @($lines[$first..$last] | Where-Object { $_.Trim() -ne '' })
+    $comparer = [System.StringComparer]::OrdinalIgnoreCase
+    $namespaceOf = { param($line) ($line -replace '^using (static )?', '' -replace ';\s*$', '').Trim() }
+    $plain = @($directives | Where-Object { $_ -notmatch '^using static ' -and $_ -notmatch '^using \w+\s*=' })
+    $system = [System.Collections.Generic.List[string]]::new()
+    $other = [System.Collections.Generic.List[string]]::new()
+    foreach ($line in $plain) {
+        $namespace = & $namespaceOf $line
+        if ($namespace -eq 'System' -or $namespace.StartsWith('System.')) { $system.Add($line) } else { $other.Add($line) }
+    }
+    $system.Sort([System.Comparison[string]] { param($a, $b) $comparer.Compare((& $namespaceOf $a), (& $namespaceOf $b)) })
+    $other.Sort([System.Comparison[string]] { param($a, $b) $comparer.Compare((& $namespaceOf $a), (& $namespaceOf $b)) })
+    $static = @($directives | Where-Object { $_ -match '^using static ' } | Sort-Object { & $namespaceOf $_ })
+    $aliases = @($directives | Where-Object { $_ -match '^using \w+\s*=' } | Sort-Object { ($_ -replace '^using (\w+).*', '$1') })
+
+    $sorted = @($system) + @($other) + $static + $aliases
+    if (($sorted -join "`n") -ceq ($directives -join "`n")) {
+        return $Text
+    }
+
+    $newline = if ($Text.Contains("`r`n")) { "`r`n" } else { "`n" }
+    $before = if ($first -gt 0) { $lines[0..($first - 1)] } else { @() }
+    $after = if ($last -lt $lines.Count - 1) { $lines[($last + 1)..($lines.Count - 1)] } else { @() }
+    return (@($before) + $sorted + @($after)) -join $newline
 }
 
 function Test-IsTextFile([string] $Path) {
@@ -138,8 +192,9 @@ foreach ($file in $trackedFiles) {
     if ($file -eq 'README.md') {
         $updated = [regex]::Replace($updated, $TemplateOnlyPattern, [string]::Empty)
     }
-    foreach ($token in $replacements.Keys) {
-        $updated = $updated.Replace($token, $replacements[$token])
+    $updated = Convert-ProductToken $updated.Replace($RepositoryToken, $RepositoryName)
+    if ($file -like '*.cs' -and $updated -cne $original) {
+        $updated = Format-UsingDirective $updated
     }
 
     if ($updated -cne $original -and $PSCmdlet.ShouldProcess($file, 'Replace template placeholders')) {
@@ -163,7 +218,7 @@ $pathsToRename = $trackedFiles |
 
 foreach ($path in $pathsToRename) {
     $leaf = Split-Path $path -Leaf
-    $newLeaf = $leaf.Replace($ProductToken, $product)
+    $newLeaf = Convert-ProductToken $leaf
     $parent = Split-Path $path -Parent
     $newPath = if ($parent) { "$parent/$newLeaf" } else { $newLeaf }
     if ($PSCmdlet.ShouldProcess($path, "Rename to $newLeaf")) {
