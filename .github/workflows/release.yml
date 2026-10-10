@@ -1,0 +1,283 @@
+# Releases the packages under src/ to nuget.org.
+#
+# Run it manually from the Actions tab. It defaults to a dry run, which builds, tests, packs and exchanges the
+# NuGet trusted-publishing token, then stops before anything irreversible: the tag, the nuget.org push, the
+# GitHub release and the bookkeeping pull request. Rehearse with a dry run first, especially on a new repository.
+#
+# One-off owner setup (see "Releasing" in README.md):
+#   1. On nuget.org, add a trusted publishing policy for this repository and the workflow file "release.yml".
+#   2. Set the repository variable NUGET_USER to the nuget.org account that owns the policy.
+#   3. Allow GitHub Actions to create pull requests (Settings -> Actions -> General), for the bookkeeping pull request.
+#
+# A run that fails after pushing the tag can simply be re-run: it resumes when the tag holds identical sources,
+# and every later step (nuget.org push, GitHub release, bookkeeping branch) skips what already exists.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Version to release as major.minor (for example 1.2). The patch number comes from Nerdbank.GitVersioning."
+        required: true
+        type: string
+      dry_run:
+        description: "Rehearse only: build, test, pack and exchange the publishing token, but publish nothing."
+        required: true
+        type: boolean
+        default: true
+
+# One release at a time: concurrent runs would race for the tag and the change-log entries.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  release:
+    name: Release ${{ inputs.release_version }}${{ inputs.dry_run && ' (dry run)' || '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write # push the tag, create the release and the bookkeeping branch
+      id-token: write # NuGet trusted publishing exchanges the workflow's OIDC token for a short-lived API key
+      pull-requests: write # open the bookkeeping pull request
+
+    steps:
+      - name: Validate inputs
+        env:
+          REF: ${{ github.ref }}
+          RELEASE_VERSION: ${{ inputs.release_version }}
+          NUGET_USER: ${{ vars.NUGET_USER }}
+        run: |
+          if [ "$REF" != "refs/heads/main" ]; then
+            echo "::error title=Wrong branch::Releases are cut from main only; this run was started from $REF."
+            exit 1
+          fi
+          if ! [[ "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            echo "::error title=Invalid version::release_version must be major.minor, for example 1.2; got '$RELEASE_VERSION'."
+            exit 1
+          fi
+          if [ -z "$NUGET_USER" ]; then
+            echo "::error title=NUGET_USER not set::Set the NUGET_USER repository variable to the nuget.org account that owns the trusted publishing policy."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          # Credentials stay in .git/config because this job pushes the tag and the bookkeeping branch.
+          persist-credentials: true
+
+      # The repository has exactly one solution at its root; finding it keeps this file identical in every repository.
+      - name: Locate the solution
+        run: |
+          shopt -s nullglob
+          solutions=(*.slnx *.sln)
+          if [ ${#solutions[@]} -ne 1 ]; then
+            echo "::error title=Solution not found::Expected exactly one .slnx or .sln file at the repository root; found ${#solutions[@]}."
+            exit 1
+          fi
+          echo "SOLUTION=${solutions[0]}" >> "$GITHUB_ENV"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
+      # Nerdbank.GitVersioning reads version.json from the committed tree, so the release version is committed
+      # locally. The commit never leaves the runner; the tag below points at the commit that was built.
+      - name: Set release version
+        id: version
+        env:
+          RELEASE_VERSION: ${{ inputs.release_version }}
+        run: |
+          dotnet nbgv set-version "$RELEASE_VERSION"
+          git add version.json
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit --quiet --message "chore(release): v${RELEASE_VERSION}"
+          version=$(dotnet nbgv get-version --variable NuGetPackageVersion)
+          echo "nuget=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+
+          # An existing tag means an earlier run of this release stopped part-way. It is resumed only when the tag
+          # holds exactly the sources being built now; any other existing tag is a real version clash.
+          if git rev-parse --quiet --verify "refs/tags/v$version" > /dev/null; then
+            if git diff --quiet "v$version" HEAD --; then
+              echo "::notice title=Resuming release::v$version is already tagged with identical sources; resuming the remaining steps."
+              # Build from the tagged commit itself, so the packages' SourceLink points at a commit that exists on GitHub.
+              git checkout --quiet --detach "v$version"
+              echo "tag_exists=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "::error title=Tag exists::v$version is already tagged with different sources. Merge a change to main or release a new major.minor."
+              exit 1
+            fi
+          else
+            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Releasing $version"
+
+      - name: Build
+        run: dotnet build "$SOLUTION" --configuration Release
+
+      - name: Test
+        run: dotnet test "$SOLUTION" --no-build --configuration Release
+
+      - name: Pack
+        run: dotnet pack "$SOLUTION" --no-build --configuration Release --output ./artifacts
+
+      - name: Upload packages
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packages
+          path: ./artifacts/*
+          if-no-files-found: error
+
+      # Runs in dry runs too: a misconfigured trusted-publishing policy is the most likely failure, and it can only
+      # be checked from inside this workflow. It runs before the tag, so a failure leaves nothing to clean up.
+      - name: NuGet login (trusted publishing)
+        id: nuget-login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Push the release tag
+        if: ${{ !inputs.dry_run && steps.version.outputs.tag_exists != 'true' }}
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            tag --annotate "$TAG" --message "Release $TAG"
+          git push origin "$TAG"
+
+      - name: Publish to nuget.org
+        if: ${{ !inputs.dry_run }}
+        env:
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+          RESUMING: ${{ steps.version.outputs.tag_exists }}
+        run: |
+          shopt -s nullglob
+          # A fresh release must fail if nuget.org already has this version; only a resumed release may skip it.
+          skip_duplicate=()
+          if [ "$RESUMING" = "true" ]; then skip_duplicate=(--skip-duplicate); fi
+          # Packages first, then their symbol packages, each pushed explicitly rather than relying on the
+          # client's search for a matching .snupkg.
+          for package in ./artifacts/*.nupkg; do
+            dotnet nuget push "$package" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" "${skip_duplicate[@]}" --no-symbols
+          done
+          for symbols in ./artifacts/*.snupkg; do
+            dotnet nuget push "$symbols" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" "${skip_duplicate[@]}"
+          done
+
+      - name: Write release notes
+        env:
+          VERSION: ${{ steps.version.outputs.nuget }}
+        run: |
+          shopt -s nullglob
+          entries=()
+          for entry in change-log/*.md; do
+            [ "$entry" = "change-log/README.md" ] || entries+=("$entry")
+          done
+          # The bookkeeping step archives exactly these entries, not ones merged after the release started.
+          printf '%s\n' "${entries[@]}" > published-entries.txt
+          {
+            echo "## ${SOLUTION%.*} $VERSION"
+            echo
+            found=false
+            for entry in "${entries[@]}"; do
+              cat "$entry"
+              echo
+              found=true
+            done
+            if [ "$found" = false ]; then
+              echo "No change-log entries were recorded for this release."
+            fi
+          } > release-notes.md
+          cat release-notes.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create the GitHub release
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            gh release create "$TAG" ./artifacts/* --title "$TAG" --notes-file release-notes.md --verify-tag
+            exit 0
+          fi
+
+          # gh creates a release as a draft, uploads the assets, then publishes it, so an earlier run that failed part-way
+          # can leave a draft or a release without every package. Complete it: an asset whose upload never finished
+          # (state "starter") holds no data and is deleted, finished assets are kept, and whatever is missing is
+          # uploaded. Then it is published with the notes.
+          echo "The GitHub release $TAG already exists; completing it."
+          unfinished=$(gh release view "$TAG" --json assets --jq '.assets[] | select(.state != "uploaded") | .name')
+          while IFS= read -r name; do
+            if [ -n "$name" ]; then
+              echo "Deleting the unfinished upload $name."
+              gh release delete-asset "$TAG" "$name" --yes
+            fi
+          done <<< "$unfinished"
+          uploaded=$(gh release view "$TAG" --json assets --jq '.assets[] | select(.state == "uploaded") | .name')
+          for asset in ./artifacts/*; do
+            if ! grep -Fxq -- "$(basename "$asset")" <<< "$uploaded"; then
+              gh release upload "$TAG" "$asset"
+            fi
+          done
+          gh release edit "$TAG" --title "$TAG" --notes-file release-notes.md --draft=false
+
+      # Archives the published change-log entries and moves version.json on to the next minor prerelease, through a
+      # pull request so that branch protection on main still applies.
+      - name: Open the bookkeeping pull request
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ inputs.release_version }}
+          VERSION: ${{ steps.version.outputs.nuget }}
+        run: |
+          major=${RELEASE_VERSION%%.*}
+          minor=${RELEASE_VERSION##*.}
+          next="$((10#${major})).$((10#${minor} + 1))-prerelease"
+          branch="chore/release-bookkeeping-v${VERSION}"
+
+          title="chore(release): bookkeeping after v${VERSION}"
+
+          # A re-run after a failure may find the branch already pushed; it then only opens the missing pull request.
+          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            if [ -n "$(gh pr list --head "$branch" --state open --json number --jq '.[0].number')" ] \
+               || [ -n "$(gh pr list --head "$branch" --state merged --json number --jq '.[0].number')" ]; then
+              echo "The bookkeeping pull request for $branch is already open or merged."
+              exit 0
+            fi
+            closed=$(gh pr list --head "$branch" --state closed --json number --jq '.[0].number')
+            if [ -n "$closed" ]; then
+              gh pr reopen "$closed"
+              exit 0
+            fi
+          else
+            git checkout --quiet -b "$branch" "origin/main"
+            dotnet nbgv set-version "$next"
+            mkdir -p "change-log/archive/v${VERSION}"
+            while IFS= read -r entry; do
+              if [ -n "$entry" ] && [ -f "$entry" ]; then
+                git mv "$entry" "change-log/archive/v${VERSION}/"
+              fi
+            done < published-entries.txt
+            git add version.json change-log
+            git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit --quiet --message "$title"
+            git push origin "$branch"
+          fi
+          gh pr create --base main --head "$branch" \
+            --title "$title" \
+            --body "Archives the change-log entries published in v${VERSION} and moves version.json to ${next}."
