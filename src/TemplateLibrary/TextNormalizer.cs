@@ -37,7 +37,7 @@ public static class TextNormalizer
     /// </summary>
     /// <remarks>
     ///     Accents are removed from letters (<c>é</c> becomes <c>e</c>). Every other character that is not an ASCII
-    ///     letter or digit, including letters from non-Latin scripts, separates words.
+    ///     letter or digit, including letters from non-Latin scripts and unpaired surrogates, separates words.
     /// </remarks>
     /// <param name="text">The text to convert.</param>
     /// <returns>The slug, or an empty string when <paramref name="text" /> contains no ASCII letters or digits.</returns>
@@ -47,7 +47,8 @@ public static class TextNormalizer
         ArgumentNullException.ThrowIfNull(text);
 
         // Decomposition splits an accented letter into its base letter and a combining mark, which is then dropped.
-        var decomposed = text.Normalize(NormalizationForm.FormD);
+        // Normalize rejects malformed UTF-16, so unpaired surrogates are replaced with spaces first.
+        var decomposed = ReplaceUnpairedSurrogates(text).Normalize(NormalizationForm.FormD);
         var slug = new StringBuilder(decomposed.Length);
         var pendingSeparator = false;
 
@@ -75,5 +76,31 @@ public static class TextNormalizer
         }
 
         return slug.ToString();
+    }
+
+    private static string ReplaceUnpairedSurrogates(string text)
+    {
+        if (!text.Any(char.IsSurrogate))
+        {
+            return text;
+        }
+
+        var sanitised = new StringBuilder(text.Length);
+        var index = 0;
+        while (index < text.Length)
+        {
+            if (char.IsSurrogatePair(text, index))
+            {
+                sanitised.Append(text, index, 2);
+                index += 2;
+            }
+            else
+            {
+                sanitised.Append(char.IsSurrogate(text[index]) ? ' ' : text[index]);
+                index++;
+            }
+        }
+
+        return sanitised.ToString();
     }
 }

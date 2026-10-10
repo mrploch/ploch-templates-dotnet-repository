@@ -35,6 +35,9 @@ public class TextNormalizerTests
     [InlineData("Привет world", "world")]
     [InlineData("emoji \U0001F600 here", "emoji-here")]
     [InlineData("math \U0001D400 letter", "math-letter")]
+    [InlineData("lone \uD83D high", "lone-high")]
+    [InlineData("lone \uDE00 low", "lone-low")]
+    [InlineData("cut\uD83D", "cut")]
     public void ToSlug_should_produce_lower_case_hyphen_separated_words(string input, string expected)
     {
         TextNormalizer.ToSlug(input).Should().Be(expected);

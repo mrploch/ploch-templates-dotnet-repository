@@ -164,15 +164,19 @@ jobs:
         if: ${{ !inputs.dry_run }}
         env:
           NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+          RESUMING: ${{ steps.version.outputs.tag_exists }}
         run: |
           shopt -s nullglob
+          # A fresh release must fail if nuget.org already has this version; only a resumed release may skip it.
+          skip_duplicate=()
+          if [ "$RESUMING" = "true" ]; then skip_duplicate=(--skip-duplicate); fi
           # Packages first, then their symbol packages, each pushed explicitly rather than relying on the
           # client's search for a matching .snupkg.
           for package in ./artifacts/*.nupkg; do
-            dotnet nuget push "$package" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate --no-symbols
+            dotnet nuget push "$package" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" "${skip_duplicate[@]}" --no-symbols
           done
           for symbols in ./artifacts/*.snupkg; do
-            dotnet nuget push "$symbols" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+            dotnet nuget push "$symbols" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" "${skip_duplicate[@]}"
           done
 
       - name: Write release notes
@@ -231,8 +235,14 @@ jobs:
 
           # A re-run after a failure may find the branch already pushed; it then only opens the missing pull request.
           if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
-            if [ -n "$(gh pr list --head "$branch" --state all --json number --jq '.[0].number')" ]; then
-              echo "The bookkeeping pull request for $branch already exists."
+            if [ -n "$(gh pr list --head "$branch" --state open --json number --jq '.[0].number')" ] \
+               || [ -n "$(gh pr list --head "$branch" --state merged --json number --jq '.[0].number')" ]; then
+              echo "The bookkeeping pull request for $branch is already open or merged."
+              exit 0
+            fi
+            closed=$(gh pr list --head "$branch" --state closed --json number --jq '.[0].number')
+            if [ -n "$closed" ]; then
+              gh pr reopen "$closed"
               exit 0
             fi
           else
