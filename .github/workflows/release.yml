@@ -15,6 +15,9 @@ name: Release
 
 on:
   workflow_dispatch:
+    # checkov:skip=CKV_GHA_7: A release is chosen by the person running it: release_version only sets major.minor, which
+    # "Validate inputs" checks against a strict pattern, and dry_run only stops before publishing. Sources, build and
+    # version height still come from the reviewed commit, so the inputs cannot inject code or alter what is built.
     inputs:
       release_version:
         description: "Version to release as major.minor (for example 1.2). The patch number comes from Nerdbank.GitVersioning."
