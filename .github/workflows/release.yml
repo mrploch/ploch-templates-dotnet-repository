@@ -10,7 +10,8 @@
 #   3. Allow GitHub Actions to create pull requests (Settings -> Actions -> General), for the bookkeeping pull request.
 #
 # A run that fails after pushing the tag can simply be re-run: it resumes when the tag holds identical sources,
-# and every later step (nuget.org push, GitHub release, bookkeeping branch) skips what already exists.
+# and every later step (nuget.org push, GitHub release, bookkeeping branch) skips what already exists. A package
+# already on nuget.org is accepted only when its metadata records the tagged commit.
 name: Release
 
 on:
@@ -170,16 +171,51 @@ jobs:
           RESUMING: ${{ steps.version.outputs.tag_exists }}
         run: |
           shopt -s nullglob
-          # A fresh release must fail if nuget.org already has this version; only a resumed release may skip it.
+          source=https://api.nuget.org/v3/index.json
+          expected_commit=$(git rev-parse HEAD)
+
+          # A fresh release must fail if nuget.org already has this version. A resumed release may find a package
+          # already there, but only from its own earlier attempt: the tag is pushed before publishing, so the tag alone
+          # does not prove that. The package on nuget.org must record the tagged commit in its repository metadata.
+          push_package() {
+            local package=$1 output
+            if [ "$RESUMING" != "true" ]; then
+              dotnet nuget push "$package" --source "$source" --api-key "$NUGET_API_KEY" --no-symbols
+              return
+            fi
+            if output=$(dotnet nuget push "$package" --source "$source" --api-key "$NUGET_API_KEY" --no-symbols 2>&1); then
+              echo "$output"
+              return
+            fi
+            echo "$output"
+            grep -q '409' <<< "$output" || return 1
+
+            local nuspec id version published published_commit
+            nuspec=$(unzip -p "$package" '*.nuspec')
+            id=$(grep -oE '<id>[^<]+' <<< "$nuspec" | head -1 | cut -c5- | tr '[:upper:]' '[:lower:]')
+            version=$(grep -oE '<version>[^<]+' <<< "$nuspec" | head -1 | cut -c10- | tr '[:upper:]' '[:lower:]')
+            if ! published=$(curl --silent --fail "https://api.nuget.org/v3-flatcontainer/$id/$version/$id.nuspec"); then
+              echo "::error title=Package not verifiable::nuget.org already has $id $version but does not serve it yet. Re-run once nuget.org has finished indexing it."
+              return 1
+            fi
+            published_commit=$(grep -oE 'commit="[0-9a-f]+"' <<< "$published" | head -1 | cut -d'"' -f2)
+            if [ "$published_commit" != "$expected_commit" ]; then
+              echo "::error title=Version clash on nuget.org::nuget.org already has $id $version built from commit '${published_commit:-unknown}', not the tagged commit $expected_commit."
+              return 1
+            fi
+            echo "::notice title=Already published::$id $version is already on nuget.org from this release's tagged commit."
+          }
+
+          # Packages first, then their symbol packages, each pushed explicitly rather than relying on the client's
+          # search for a matching .snupkg. A symbol package is only reached once its package has been pushed or
+          # verified above, so on a resumed release a duplicate symbol package is the earlier attempt's own.
+          for package in ./artifacts/*.nupkg; do
+            push_package "$package"
+          done
           skip_duplicate=()
           if [ "$RESUMING" = "true" ]; then skip_duplicate=(--skip-duplicate); fi
-          # Packages first, then their symbol packages, each pushed explicitly rather than relying on the
-          # client's search for a matching .snupkg.
-          for package in ./artifacts/*.nupkg; do
-            dotnet nuget push "$package" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" "${skip_duplicate[@]}" --no-symbols
-          done
           for symbols in ./artifacts/*.snupkg; do
-            dotnet nuget push "$symbols" --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" "${skip_duplicate[@]}"
+            dotnet nuget push "$symbols" --source "$source" --api-key "$NUGET_API_KEY" "${skip_duplicate[@]}"
           done
 
       - name: Write release notes
