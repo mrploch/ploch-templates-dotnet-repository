@@ -350,45 +350,26 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-
-# My Additions
+# --- mrploch template additions ---
+# IDE and editor state
+.idea/
+.vscode/*
+!.vscode/extensions.json
 .history/
-/TestApps/TestApps.ConsoleApp/_site_pdf
-/TestApps/TestApps.ConsoleApp/log.txt
-/NDependOut1
-.sonarqube/**
-**/TestResults/coverage.opencover.xml
-**/log.txt
 *.bak
-coverage.xml
+*.orig
 
-# Rider specific files
+# Build, test and analysis output
+**/CoverageResults/
+**/TestResults/
+coverage-report/
+.sonarqube/
+*.binlog
+**/log.txt
 
-# Default ignored files
-**/.idea*/shelf/
-**/.idea*/workspace.xml
-# Rider ignored files
-**/.idea*/projectSettingsUpdater.xml
-**/.idea*/contentModel.xml
-**/.idea*/modules.xml
-**/.idea*/*.iml
-# Editor-based HTTP Client requests
-**/.idea*/httpRequests/
-# Datasource local storage ignored files
-**/.idea*/dataSources/
-**/.idea*/dataSources.local.xml
-**/.idea/**/sonarlint/
-**/.idea*/**/dbnavigator.xml
-**/.idea/**/codestream.xml
-**/codestream.xml
-codestream.xml
-/.idea/**/aws.xml
-/.idea/**/encodings.xml
-/.idea/**/GitLink.xml
-/.idea/**/misc.xml
-/.idea/**/vcs.xml
-/.idea/**/.idea/dataSources.xml
-/.idea/**/.idea/inspectionProfiles/Project_Default.xml
-/.idea/.idea.Ploch.DotNetRepository.Data/.idea/vcs.xml
-/.idea/**/*copilot*
-**/.idea/codestream.xml
+# Local AI-agent and tool state (never commit: may contain credentials or personal settings)
+.claude/settings.local.json
+.claude/worktrees/
+.contextstream/
+.junie/
+last-session.md
