@@ -311,6 +311,9 @@ dotnet_diagnostic.sa1200.severity = none # Using directives go outside the (file
 dotnet_diagnostic.sa1206.severity = none # Wrongly requires "required" before the access modifier ("required public"); C# style is "public required"
 dotnet_diagnostic.sa1309.severity = none # House style: private fields are _camelCase
 dotnet_diagnostic.sa1313.severity = none # Reports PascalCase positional record parameters, which become public properties
+# One top-level type per file (StyleCop 1.3+, every type kind via stylecop.json). Not checked by SA1402: nested and
+# file-local (`file class`) types, which the rule allows, and files with top-level statements (Program.cs), which
+# must declare no types.
 dotnet_diagnostic.sa1402.severity = warning # File may only contain a single type
 dotnet_diagnostic.sa1413.severity = none # Trailing commas in multi-line initialisers are optional
 dotnet_diagnostic.sa1500.severity = none # Conflicts with roslynator_block_braces_style = single_line_when_empty, which keeps empty bodies as { }
