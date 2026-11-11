@@ -135,7 +135,7 @@ jobs:
         run: dotnet build "$SOLUTION" --configuration Release
 
       - name: Test
-        run: dotnet test "$SOLUTION" --no-build --configuration Release
+        run: dotnet test --solution "$SOLUTION" --no-build --configuration Release
 
       - name: Pack
         run: dotnet pack "$SOLUTION" --no-build --configuration Release --output ./artifacts

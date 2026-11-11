@@ -1,0 +1,7 @@
+---
+engines:
+  markdownlint:
+    exclude_paths:
+      # Change-log entries are fragments: the Release workflow concatenates them under its own headings, so each one
+      # starts at a "### Added/Changed/..." heading and cannot satisfy MD041 (first line must be a top-level heading).
+      - "change-log/**"
