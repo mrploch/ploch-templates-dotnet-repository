@@ -20,8 +20,8 @@
              .NET 10 SDK; global.json selects the MTP mode. Coverage (coverlet.MTP) and TRX are MTP extensions. -->
         <PackageVersion Include="coverlet.MTP" Version="10.1.0" />
         <PackageVersion Include="FluentAssertions" Version="8.11.0" />
-        <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.5.2" />
-        <PackageVersion Include="xunit.v3" Version="4.0.2" />
+        <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.5.3" />
+        <PackageVersion Include="xunit.v3" Version="4.0.3" />
     </ItemGroup>
 
     <ItemGroup Label="Analysers">
